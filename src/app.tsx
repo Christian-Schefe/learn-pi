@@ -29,10 +29,14 @@ export function App() {
 
 const pi = digitsTxt.slice(2).split('').map(Number);
 
+function calcRows(width: number) {
+  return Math.min(15, Math.floor(width / 32) - 4);
+}
+
 function DigitsWrapper() {
   const [digits, setDigits] = useState<number[]>([]);
   const [mistakes, setMistakes] = useState(0);
-  const [cellsPerRow, setCellsPerRow] = useState(window.outerWidth);
+  const [cellsPerRow, setCellsPerRow] = useState(calcRows(window.outerWidth));
 
   function handleKey(e: KeyboardEvent) {
     if (e.key == 'r') return resetProgress();
@@ -54,8 +58,8 @@ function DigitsWrapper() {
 
   function resize(event: Event) {
     const width = (event.target as Window).outerWidth;
-    setCellsPerRow(_ => Math.min(15, Math.floor(width / 32) - 4));
-    console.log(cellsPerRow)
+    setCellsPerRow(_ => calcRows(width));
+    console.log(cellsPerRow);
   }
 
   const cells = [];
@@ -88,16 +92,18 @@ function DigitsWrapper() {
   }
 
   const style = {
-    "grid-template-columns": `repeat(${cellsPerRow}, minmax(0, 1fr))`
-  }
+    'grid-template-columns': `repeat(${cellsPerRow}, minmax(0, 1fr))`,
+  };
 
   return (
     <div class="flex flex-col items-center">
       <KeyboardListener callback={handleKey}></KeyboardListener>
       <ResizeListener callback={resize}></ResizeListener>
       <div class="flex flex-col gap-3">
-        <div class="grid grid-cols-3 w-fit gap-[1px] p-[1px] bg-blue-400"
-        style={style}>
+        <div
+          class="grid grid-cols-3 w-fit gap-[1px] p-[1px] bg-blue-400"
+          style={style}
+        >
           {cells}
         </div>
         <div class="flex gap-2 items-center justify-start col-span-full bg-[#242424]">
