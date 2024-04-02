@@ -1,10 +1,15 @@
 import { useMeasure } from 'react-use';
 import { DigitCell } from './digitCell';
 import { Ref } from 'preact';
-import { MistakeCounter } from './mistakeCounter';
+import { StatsDisplay } from './statsDisplay';
 
 function calcRows(width: number) {
-  return Math.max(3, Math.min(15, Math.floor(width / 32) - 1));
+  const withoutPadding = width - 4;
+  const cellSizeWithGap = 32 + 4;
+  return Math.max(
+    3,
+    Math.min(15, Math.floor(withoutPadding / cellSizeWithGap)),
+  );
 }
 
 interface Props {
@@ -24,15 +29,15 @@ export function DigitsGrid(props: Props) {
   );
 
   for (let i = 0; i < rowsCount * cellsPerRow; i++) {
-    if (i == 0) cells.push(DigitCell('3'));
-    else if (i == 1) cells.push(DigitCell('.'));
+    if (i == 0) cells.push(DigitCell('3', 0));
+    else if (i == 1) cells.push(DigitCell('.', 0));
     else {
       const digitIndex = i - 2;
       const text =
         digitIndex < props.digits.length
           ? props.digits[digitIndex].toString()
           : '';
-      cells.push(DigitCell(text));
+      cells.push(DigitCell(text, digitIndex));
     }
   }
 
@@ -42,11 +47,11 @@ export function DigitsGrid(props: Props) {
 
   return (
     <div ref={ref as Ref<HTMLDivElement>} class="flex flex-col items-center">
-      <div class="flex flex-col gap-3">
-        <div class="grid w-fit gap-[1px] p-[1px] bg-blue-400" style={style}>
+      <div class="flex flex-col gap-3 items-center">
+        <div class="grid w-fit gap-1 py-1" style={style}>
           {cells}
         </div>
-        <MistakeCounter mistakes={props.mistakes}></MistakeCounter>
+        <StatsDisplay mistakes={props.mistakes} digits={props.digits.length}></StatsDisplay>
       </div>
     </div>
   );

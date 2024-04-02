@@ -62,7 +62,7 @@ export function App() {
         <h1 class="font-bold text-2xl m-3"> Controls</h1>
         <p>
           <button
-            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded self-center"
+            class="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-2 px-4 rounded self-center"
             onClick={resetProgress}
           >
             reset

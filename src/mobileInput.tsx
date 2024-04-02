@@ -19,7 +19,7 @@ export const DigitButton = (props: {
 }) => {
   return (
     <button
-      class="w-12 h-12 font-bold flex text-xl items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-sm"
+      class="w-12 h-12 font-bold flex text-xl items-center justify-center bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-sm"
       onClick={() => props.callback(props.digit)}
     >
       {props.digit}
