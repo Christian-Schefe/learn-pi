@@ -1,5 +1,6 @@
 import './app.css';
 import digitsTxt from '/digits.txt?raw';
+import piSvg from '/pi.svg';
 import { DigitsGrid } from './digitsGrid';
 import { DigitButtonRow } from './mobileInput';
 import { useState } from 'preact/hooks';
@@ -55,7 +56,7 @@ export function App() {
         <span class="[text-shadow:_0px_0px_5px_var(--tw-shadow-color)] shadow-gray-700 rounded-sm font-bold text-xl bg-blue-500 min-w-8 h-8 p-2 inline-flex items-center justify-center">
           1,000,000
         </span>{' '}
-        digits of π
+        digits of <img class="inline-block w-6 h-6 ml-1" src={piSvg}></img>
       </h1>
       <DigitsGrid digits={digitsToShow} mistakes={mistakes}></DigitsGrid>
       <div class="text-xl mb-10">
