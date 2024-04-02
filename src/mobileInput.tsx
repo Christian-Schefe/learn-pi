@@ -1,4 +1,4 @@
-const digits = [...Array(10).keys()];
+const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
 export const DigitButtonRow = (props: {
   callback: (digit: number) => void;
