@@ -17,8 +17,6 @@ export class KeyboardListener extends Component<KeyboardListenerProps> {
     document.removeEventListener('keydown', this.handleKeyDown);
   }
 
-  keyCallback = () => {};
-
   handleKeyDown = (event: KeyboardEvent) => {
     console.log('Key pressed:', event.key);
     this.props.callback(event);
