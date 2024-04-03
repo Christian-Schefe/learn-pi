@@ -14,21 +14,6 @@ interface Entry {
   score: number;
 }
 
-async function updateScore(id: number, score: number): Promise<void> {
-  const response = await fetch(backendUrl + `/${id}`, {
-    method: 'POST',
-    mode: 'cors',
-    body: JSON.stringify({ score: score }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  console.log('response: ', JSON.stringify(response.headers));
-  const json: Entry = await response.json();
-  console.log('updated: ', json);
-}
-
 async function saveScore(score: number): Promise<number> {
   const response = await fetch(backendUrl, {
     method: 'POST',
@@ -51,23 +36,18 @@ export function App() {
   const [mistakes, setMistakes] = useState(
     Number.parseInt(localStorage.getItem('mistakes') ?? '') || 0,
   );
-  const [runId, setRunId] = useState(
-    Number.parseInt(localStorage.getItem('runId') ?? '') || -1,
-  );
 
   const callback = async (digit: number) => {
     const isCorrect = pi[digits] === digit;
     if (!isCorrect) {
       localStorage.setItem('mistakes', (mistakes + 1).toString());
+      if (mistakes === 0) {
+        await saveScore(digits);
+      }
       setMistakes(prev => prev + 1);
     } else {
       localStorage.setItem('digits', (digits + 1).toString());
       setDigits(prev => prev + 1);
-      if (runId === -1) {
-        const newRunId = await saveScore(digits + 1);
-        setRunId(newRunId);
-        console.log('new run id: ', newRunId);
-      } else await updateScore(runId, digits + 1);
     }
   };
 
@@ -84,8 +64,9 @@ export function App() {
   };
 
   const resetProgress = async () => {
-    const newRunId = await saveScore(0);
-    setRunId(newRunId);
+    if (mistakes === 0) {
+      await saveScore(digits);
+    }
     setDigits(0);
     setMistakes(0);
     localStorage.setItem('mistakes', '0');

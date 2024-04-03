@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, State},
-    http::{Method, StatusCode},
+    http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -43,11 +43,13 @@ async fn update(
     Path(id): Path<i32>,
     Json(data): Json<Entry>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
-    match sqlx::query_as::<_, Entry>("UPDATE scores SET score = $1 WHERE id = $2 RETURNING id, score")
-        .bind(&data.score)
-        .bind(&id)
-        .fetch_one(&state.db)
-        .await
+    match sqlx::query_as::<_, Entry>(
+        "UPDATE scores SET score = $1 WHERE id = $2 RETURNING id, score",
+    )
+    .bind(&data.score)
+    .bind(&id)
+    .fetch_one(&state.db)
+    .await
     {
         Ok(todo) => Ok((StatusCode::CREATED, Json(todo))),
         Err(e) => Err((StatusCode::BAD_REQUEST, e.to_string())),
