@@ -36,18 +36,23 @@ export function App() {
   const [mistakes, setMistakes] = useState(
     Number.parseInt(localStorage.getItem('mistakes') ?? '') || 0,
   );
+  const [highscore, setHighscore] = useState(
+    Number.parseInt(localStorage.getItem('highscore') ?? '') || 0,
+  );
 
   const callback = async (digit: number) => {
     const isCorrect = pi[digits] === digit;
     if (!isCorrect) {
       localStorage.setItem('mistakes', (mistakes + 1).toString());
       if (mistakes === 0) {
+        console.log("made a mistake, saving score");
         await saveScore(digits);
       }
       setMistakes(prev => prev + 1);
     } else {
       localStorage.setItem('digits', (digits + 1).toString());
       setDigits(prev => prev + 1);
+      setHighscore(Math.max(highscore, digits + 1));
     }
   };
 
@@ -65,6 +70,7 @@ export function App() {
 
   const resetProgress = async () => {
     if (mistakes === 0) {
+      console.log("resetting without a mistake, saving score");
       await saveScore(digits);
     }
     setDigits(0);
@@ -88,6 +94,7 @@ export function App() {
       <DigitsGrid
         digits={digitsToShow}
         mistakes={mistakes}
+        highscore={highscore}
         resetCallback={resetProgress}
       ></DigitsGrid>
       <div class="w-full h-0 mb-4"></div>

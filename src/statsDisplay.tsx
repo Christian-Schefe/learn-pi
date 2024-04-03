@@ -15,6 +15,7 @@ function getClassByMistakes(mistakes: number) {
 export const StatsDisplay = (props: {
   mistakes: number;
   digits: number;
+  highscore: number;
   resetCallback: () => void;
 }) => {
   return (
@@ -31,6 +32,14 @@ export const StatsDisplay = (props: {
         </p>
         <h1 class="font-bold [text-shadow:_0px_0px_5px_var(--tw-shadow-color)] shadow-gray-700">
           {props.digits}
+        </h1>
+      </div>
+      <div class="rounded-sm gap-2 px-2 text-xl bg-blue-500 min-w-8 h-8 flex items-center justify-center">
+        <p class="text-xl tracking-wide [text-shadow:_0px_0px_5px_var(--tw-shadow-color)] shadow-gray-700">
+          Highscore:
+        </p>
+        <h1 class="font-bold [text-shadow:_0px_0px_5px_var(--tw-shadow-color)] shadow-gray-700">
+          {props.highscore}
         </h1>
       </div>
       <div

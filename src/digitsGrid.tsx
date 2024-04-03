@@ -3,7 +3,7 @@ import { DigitCell } from './digitCell';
 import { Ref } from 'preact';
 import { StatsDisplay } from './statsDisplay';
 
-function calcRows(width: number) {
+function calcCols(width: number) {
   const withoutPadding = width - 4;
   const cellSizeWithGap = 32 + 4;
   return Math.max(
@@ -15,6 +15,7 @@ function calcRows(width: number) {
 interface Props {
   digits: number[];
   mistakes: number;
+  highscore: number;
   resetCallback: () => void;
 }
 
@@ -22,8 +23,8 @@ export function DigitsGrid(props: Props) {
   const [ref, { width }] = useMeasure();
 
   const cells = [];
-  const minRows = 15;
-  const cellsPerRow = calcRows(width);
+  const cellsPerRow = calcCols(width);
+  const minRows = cellsPerRow;
   const rowsCount = Math.max(
     Math.floor((props.digits.length + 1) / cellsPerRow) + 2,
     minRows,
@@ -52,7 +53,12 @@ export function DigitsGrid(props: Props) {
         <div class="grid w-fit gap-1 py-1" style={style}>
           {cells}
         </div>
-        <StatsDisplay mistakes={props.mistakes} digits={props.digits.length} resetCallback={props.resetCallback}></StatsDisplay>
+        <StatsDisplay
+          highscore={props.highscore}
+          mistakes={props.mistakes}
+          digits={props.digits.length}
+          resetCallback={props.resetCallback}
+        ></StatsDisplay>
       </div>
     </div>
   );
