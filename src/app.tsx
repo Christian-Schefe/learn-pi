@@ -5,29 +5,9 @@ import { DigitButtonRow } from './mobileInput';
 import { useState } from 'preact/hooks';
 import { KeyboardListener } from './keyboardListener';
 import { useWindowSize } from 'react-use';
+import { saveScore } from './middleware';
 
 const pi = digitsTxt.slice(2).split('').map(Number);
-const backendUrl = 'https://learn-pi-backend.shuttleapp.rs/scores';
-
-interface Entry {
-  id: number;
-  score: number;
-}
-
-async function saveScore(score: number): Promise<number> {
-  const response = await fetch(backendUrl, {
-    method: 'POST',
-    mode: 'cors',
-    body: JSON.stringify({ score: score }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  const json: Entry = await response.json();
-  console.log('saved: ', json);
-  return json.id;
-}
 
 function useStoredState<T>(
   key: string,
@@ -71,7 +51,7 @@ export function App() {
   };
 
   const onKeyboardInput = (event: KeyboardEvent) => {
-    if (event.key === 'r') {
+    if (event.key.toLowerCase() === 'r') {
       resetProgress();
       return;
     }
