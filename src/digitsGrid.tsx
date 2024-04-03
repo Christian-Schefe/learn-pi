@@ -15,6 +15,7 @@ function calcRows(width: number) {
 interface Props {
   digits: number[];
   mistakes: number;
+  resetCallback: () => void;
 }
 
 export function DigitsGrid(props: Props) {
@@ -51,7 +52,7 @@ export function DigitsGrid(props: Props) {
         <div class="grid w-fit gap-1 py-1" style={style}>
           {cells}
         </div>
-        <StatsDisplay mistakes={props.mistakes} digits={props.digits.length}></StatsDisplay>
+        <StatsDisplay mistakes={props.mistakes} digits={props.digits.length} resetCallback={props.resetCallback}></StatsDisplay>
       </div>
     </div>
   );
