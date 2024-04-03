@@ -7,6 +7,42 @@ import { useState } from 'preact/hooks';
 import { KeyboardListener } from './keyboardListener';
 
 const pi = digitsTxt.slice(2).split('').map(Number);
+const backendUrl = 'https://learn-pi-backend.shuttleapp.rs/scores';
+
+interface Entry {
+  id: number;
+  score: number;
+}
+
+async function updateScore(id: number, score: number): Promise<void> {
+  const response = await fetch(backendUrl + `/${id}`, {
+    method: 'POST',
+    mode: 'cors',
+    body: JSON.stringify({ score: score }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  console.log('response: ', JSON.stringify(response.headers));
+  const json: Entry = await response.json();
+  console.log('updated: ', json);
+}
+
+async function saveScore(score: number): Promise<number> {
+  const response = await fetch(backendUrl, {
+    method: 'POST',
+    mode: 'cors',
+    body: JSON.stringify({ score: score }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const json: Entry = await response.json();
+  console.log('saved: ', json);
+  return json.id;
+}
 
 export function App() {
   const [digits, setDigits] = useState(
@@ -15,8 +51,11 @@ export function App() {
   const [mistakes, setMistakes] = useState(
     Number.parseInt(localStorage.getItem('mistakes') ?? '') || 0,
   );
+  const [runId, setRunId] = useState(
+    Number.parseInt(localStorage.getItem('runId') ?? '') || -1,
+  );
 
-  const callback = (digit: number) => {
+  const callback = async (digit: number) => {
     const isCorrect = pi[digits] === digit;
     if (!isCorrect) {
       localStorage.setItem('mistakes', (mistakes + 1).toString());
@@ -24,6 +63,11 @@ export function App() {
     } else {
       localStorage.setItem('digits', (digits + 1).toString());
       setDigits(prev => prev + 1);
+      if (runId === -1) {
+        const newRunId = await saveScore(digits + 1);
+        setRunId(newRunId);
+        console.log('new run id: ', newRunId);
+      } else await updateScore(runId, digits + 1);
     }
   };
 
@@ -39,25 +83,13 @@ export function App() {
     callback(parseInt(event.key));
   };
 
-  const resetProgress = () => {
+  const resetProgress = async () => {
+    const newRunId = await saveScore(0);
+    setRunId(newRunId);
     setDigits(0);
     setMistakes(0);
     localStorage.setItem('mistakes', '0');
     localStorage.setItem('digits', '0');
-
-    fetch('https://learn-pi-backend.shuttleapp.rs/scores', {
-      method: 'POST',
-      mode: 'cors',
-      body: JSON.stringify({ score: 0 }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(response => {
-        console.log(response);
-        response.json();
-      })
-      .then(data => console.log(data));
   };
 
   const digitsToShow = pi.slice(0, digits);

@@ -38,6 +38,22 @@ async fn add(
     }
 }
 
+async fn update(
+    State(state): State<AppState>,
+    Path(id): Path<i32>,
+    Json(data): Json<Entry>,
+) -> Result<impl IntoResponse, impl IntoResponse> {
+    match sqlx::query_as::<_, Entry>("UPDATE scores SET score = $1 WHERE id = $2 RETURNING id, score")
+        .bind(&data.score)
+        .bind(&id)
+        .fetch_one(&state.db)
+        .await
+    {
+        Ok(todo) => Ok((StatusCode::CREATED, Json(todo))),
+        Err(e) => Err((StatusCode::BAD_REQUEST, e.to_string())),
+    }
+}
+
 #[derive(Clone)]
 struct AppState {
     db: PgPool,
@@ -48,7 +64,7 @@ struct NewEntry {
     score: i32,
 }
 
-#[derive(Serialize, FromRow)]
+#[derive(Deserialize, Serialize, FromRow)]
 struct Entry {
     id: i32,
     score: i32,
@@ -64,13 +80,14 @@ async fn main(#[shuttle_shared_db::Postgres] db: PgPool) -> shuttle_axum::Shuttl
     //     .parse()
     //     .unwrap()];
     let cors = tower_http::cors::CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
+        .allow_methods(Any)
         .allow_headers(Any)
         .allow_origin(Any);
 
     let router = Router::new()
         .route("/scores", post(add))
         .route("/scores/:id", get(retrieve))
+        .route("/scores/:id", post(update))
         .with_state(state)
         .layer(cors);
 
