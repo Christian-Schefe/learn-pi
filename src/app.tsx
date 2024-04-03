@@ -44,6 +44,20 @@ export function App() {
     setMistakes(0);
     localStorage.setItem('mistakes', '0');
     localStorage.setItem('digits', '0');
+
+    fetch('https://learn-pi-backend.shuttleapp.rs/scores', {
+      method: 'POST',
+      mode: 'cors',
+      body: JSON.stringify({ score: 0 }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => {
+        console.log(response);
+        response.json();
+      })
+      .then(data => console.log(data));
   };
 
   const digitsToShow = pi.slice(0, digits);
