@@ -1,18 +1,24 @@
-import { useMeasure } from 'react-use';
 import { DigitCell } from './digitCell';
-import { Ref } from 'preact';
 import { StatsDisplay } from './statsDisplay';
 
-function calcCols(width: number) {
-  const withoutPadding = width - 4;
-  const cellSizeWithGap = 32 + 4;
-  return Math.max(
-    3,
-    Math.min(15, Math.floor(withoutPadding / cellSizeWithGap)),
-  );
+const windowPadding = 32 * 2;
+const cellSize = 32;
+const gap = 4;
+
+function calcCols(width: number): { cols: number; gridWidth: number } {
+  const minCols = 3;
+  const paddedCellSize = cellSize + gap;
+  const availableWidth = width - windowPadding;
+  const spaceForCols = availableWidth + gap - paddedCellSize * minCols;
+
+  const fittingRows = Math.floor(spaceForCols / paddedCellSize);
+
+  const cols = Math.min(15, minCols + fittingRows);
+  return { cols, gridWidth: cols * paddedCellSize - gap };
 }
 
 interface Props {
+  windowSize: { width: number; height: number };
   digits: number[];
   mistakes: number;
   highscore: number;
@@ -20,17 +26,16 @@ interface Props {
 }
 
 export function DigitsGrid(props: Props) {
-  const [ref, { width }] = useMeasure();
-
   const cells = [];
-  const cellsPerRow = calcCols(width);
-  const minRows = cellsPerRow;
+  const { cols, gridWidth } = calcCols(props.windowSize.width);
+
+  const minRows = cols;
   const rowsCount = Math.max(
-    Math.floor((props.digits.length + 1) / cellsPerRow) + 2,
+    Math.floor((props.digits.length + 1) / cols) + 2,
     minRows,
   );
 
-  for (let i = 0; i < rowsCount * cellsPerRow; i++) {
+  for (let i = 0; i < rowsCount * cols; i++) {
     if (i == 0) cells.push(DigitCell('3', 0));
     else if (i == 1) cells.push(DigitCell('.', 0));
     else {
@@ -44,13 +49,18 @@ export function DigitsGrid(props: Props) {
   }
 
   const style = {
-    'grid-template-columns': `repeat(${cellsPerRow}, minmax(0, 1fr))`,
+    'grid-template-columns': `repeat(${cols}, ${cellSize}px)`,
+    width: gridWidth + 'px',
+    gap: gap + 'px',
   };
 
   return (
-    <div ref={ref as Ref<HTMLDivElement>} class="flex flex-col items-center">
-      <div class="flex flex-col gap-3 items-center">
-        <div class="grid w-fit gap-1 py-1" style={style}>
+    <div class="w-full h-full flex flex-col items-center">
+      <div
+        class="flex flex-col gap-3 items-center"
+        style={{ width: style.width }}
+      >
+        <div class="grid py-1" style={style}>
           {cells}
         </div>
         <StatsDisplay

@@ -1,10 +1,10 @@
-import './app.css';
 import digitsTxt from '/digits.txt?raw';
 import piSvg from '/pi.svg';
 import { DigitsGrid } from './digitsGrid';
 import { DigitButtonRow } from './mobileInput';
 import { useState } from 'preact/hooks';
 import { KeyboardListener } from './keyboardListener';
+import { useWindowSize } from 'react-use';
 
 const pi = digitsTxt.slice(2).split('').map(Number);
 const backendUrl = 'https://learn-pi-backend.shuttleapp.rs/scores';
@@ -83,18 +83,20 @@ export function App() {
   };
 
   const resetProgress = async () => {
-    if (mistakes === 0) {
+    const shouldSave = mistakes === 0 && digits > 0;
+    setDigits(0);
+    setMistakes(0);
+    if (shouldSave) {
       console.log('resetting without a mistake, saving score');
       await saveScore(digits);
     }
-    setDigits(0);
-    setMistakes(0);
   };
 
   const digitsToShow = pi.slice(0, digits);
+  const windowSize = useWindowSize();
 
   return (
-    <div class="flex flex-col gap-5">
+    <div class="p-8 pb-[4.25rem] mx-0 my-auto text-center flex flex-col gap-5">
       <KeyboardListener callback={onKeyboardInput}></KeyboardListener>
       <h1 class="text-2xl">
         Learn{' '}
@@ -104,12 +106,12 @@ export function App() {
         digits of <img class="inline-block w-6 h-6 ml-1" src={piSvg}></img>
       </h1>
       <DigitsGrid
+        windowSize={windowSize}
         digits={digitsToShow}
         mistakes={mistakes}
         highscore={highscore}
         resetCallback={resetProgress}
       ></DigitsGrid>
-      <div class="w-full h-0 mb-4"></div>
       <DigitButtonRow callback={onNumberInput}></DigitButtonRow>
     </div>
   );
