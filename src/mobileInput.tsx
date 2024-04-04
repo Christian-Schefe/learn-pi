@@ -7,7 +7,7 @@ export const DigitButtonRow = (props: {
     <DigitButton digit={digit} callback={props.callback} />
   ));
   return (
-    <div class="fixed p-1 bottom-0 left-0 right-0 h-auto flex justify-center gap-1 bg-[#242424]">
+    <div class="text-white fixed p-1 bottom-0 left-0 right-0 h-auto flex justify-center gap-1 bg-white dark:bg-[#242424]">
       {buttons}
     </div>
   );

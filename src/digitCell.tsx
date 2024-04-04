@@ -11,8 +11,8 @@ export function DigitCell(props: DigitCellProps) {
       ? isMilestone
         ? 'bg-blue-500'
         : 'bg-slate-500'
-      : 'bg-gray-600';
-  const textColor = props.discovered ? 'text-white' : 'text-gray-300';
+      : 'bg-gray-400 dark:bg-gray-600';
+  const textColor = props.discovered ? 'text-white' : 'text-gray-100 dark:text-gray-300';
   return (
     <div
       class={`min-w-8 min-h-8 rounded-sm ${color} font-bold flex text-xl items-center justify-center`}

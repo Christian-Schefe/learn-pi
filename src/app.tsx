@@ -2,14 +2,16 @@ import digitsTxt from '/digits.txt?raw';
 import piSvg from '/pi.svg';
 import { DigitsGrid } from './digitsGrid';
 import { DigitButtonRow } from './mobileInput';
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { KeyboardListener } from './keyboardListener';
 import { useWindowSize } from 'react-use';
 import { saveScore } from './middleware';
+import { ThemeToggle } from './theme';
 
 export const PI = digitsTxt.slice(2).split('').map(Number);
+export const MAX_MISTAKES = 5;
 
-function useStoredState<T>(
+export function useStoredState<T>(
   key: string,
   defaultValue: T,
 ): [T, (value: T) => void] {
@@ -39,7 +41,7 @@ export function App() {
       const newMistakes = mistakes + 1;
       setMistakes(newMistakes);
 
-      if (newMistakes > 5) {
+      if (newMistakes > MAX_MISTAKES) {
         await onGameOver();
       }
     } else {
@@ -70,7 +72,7 @@ export function App() {
     setMistakes(0);
     setGameOver(false);
 
-    console.log('resetting, saving score: ', shouldSave);
+    console.log('resetting, saving score:', shouldSave);
     if (shouldSave) {
       await saveScore(digits);
     }
@@ -80,7 +82,7 @@ export function App() {
     const shouldSave = !gameOver && digits > 0;
     setGameOver(true);
 
-    console.log('game over, saving score: ', shouldSave);
+    console.log('game over, saving score:', shouldSave);
     if (shouldSave) {
       await saveScore(digits);
     }
@@ -88,22 +90,16 @@ export function App() {
 
   const windowSize = useWindowSize();
 
-  useEffect(() => {
-    if (gameOver) {
-      console.log('loaded from game over state, resetting');
-      resetProgress();
-    }
-  }, []);
-
   return (
     <div class="p-8 pb-[4.25rem] mx-0 my-auto text-center flex flex-col gap-5">
       <KeyboardListener callback={onKeyboardInput}></KeyboardListener>
-      <h1 class="text-2xl">
+      <h1 class="text-2xl dark:text-white">
         Learn{' '}
-        <span class="[text-shadow:_0px_0px_5px_var(--tw-shadow-color)] shadow-gray-700 rounded-sm font-bold text-xl bg-blue-500 min-w-8 h-8 p-2 inline-flex items-center justify-center">
+        <span class="text-white rounded-sm font-bold text-xl bg-blue-500 min-w-8 h-8 p-2 inline-flex items-center justify-center">
           1,000,000
         </span>{' '}
         digits of <img class="inline-block w-6 h-6 ml-1" src={piSvg}></img>
+        <ThemeToggle></ThemeToggle>
       </h1>
       <DigitsGrid
         windowSize={windowSize}
