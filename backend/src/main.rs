@@ -81,10 +81,7 @@ async fn main(#[shuttle_shared_db::Postgres] db: PgPool) -> shuttle_axum::Shuttl
     // let origins: [HeaderValue; 1] = ["http://christian-schefe.github.io/learn-pi"
     //     .parse()
     //     .unwrap()];
-    let cors = tower_http::cors::CorsLayer::new()
-        .allow_methods(Any)
-        .allow_headers(Any)
-        .allow_origin(Any);
+    let cors = tower_http::cors::CorsLayer::permissive();
 
     let router = Router::new()
         .route("/scores", post(add))

@@ -1,5 +1,6 @@
 import { DigitCell } from './digitCell';
 import { StatsDisplay } from './statsDisplay';
+import { PI } from './app';
 
 const windowPadding = 32 * 2;
 const cellSize = 32;
@@ -19,10 +20,12 @@ function calcCols(width: number): { cols: number; gridWidth: number } {
 
 interface Props {
   windowSize: { width: number; height: number };
-  digits: number[];
+  digits: number;
   mistakes: number;
   highscore: number;
+  uncover: boolean;
   resetCallback: () => void;
+  uncoverCallback: () => void;
 }
 
 export function DigitsGrid(props: Props) {
@@ -31,20 +34,23 @@ export function DigitsGrid(props: Props) {
 
   const minRows = cols;
   const rowsCount = Math.max(
-    Math.floor((props.digits.length + 1) / cols) + 2,
+    Math.floor((props.digits + 1) / cols) + 2,
     minRows,
   );
 
   for (let i = 0; i < rowsCount * cols; i++) {
-    if (i == 0) cells.push(DigitCell('3', 0));
-    else if (i == 1) cells.push(DigitCell('.', 0));
+    if (i == 0)
+      cells.push(DigitCell({ text: '3', index: 0, discovered: true }));
+    else if (i == 1)
+      cells.push(DigitCell({ text: '.', index: 0, discovered: true }));
     else {
       const digitIndex = i - 2;
+      const isDiscovered = digitIndex < props.digits;
       const text =
-        digitIndex < props.digits.length
-          ? props.digits[digitIndex].toString()
-          : '';
-      cells.push(DigitCell(text, digitIndex));
+        isDiscovered || props.uncover ? PI[digitIndex].toString() : '';
+      cells.push(
+        DigitCell({ text, index: digitIndex, discovered: isDiscovered }),
+      );
     }
   }
 
@@ -66,8 +72,10 @@ export function DigitsGrid(props: Props) {
         <StatsDisplay
           highscore={props.highscore}
           mistakes={props.mistakes}
-          digits={props.digits.length}
+          digits={props.digits}
           resetCallback={props.resetCallback}
+          uncovered={props.uncover}
+          uncoverCallback={props.uncoverCallback}
         ></StatsDisplay>
       </div>
     </div>

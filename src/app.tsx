@@ -2,12 +2,12 @@ import digitsTxt from '/digits.txt?raw';
 import piSvg from '/pi.svg';
 import { DigitsGrid } from './digitsGrid';
 import { DigitButtonRow } from './mobileInput';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { KeyboardListener } from './keyboardListener';
 import { useWindowSize } from 'react-use';
 import { saveScore } from './middleware';
 
-const pi = digitsTxt.slice(2).split('').map(Number);
+export const PI = digitsTxt.slice(2).split('').map(Number);
 
 function useStoredState<T>(
   key: string,
@@ -29,22 +29,24 @@ export function App() {
   const [digits, setDigits] = useStoredState('digits', 0);
   const [mistakes, setMistakes] = useStoredState('mistakes', 0);
   const [highscore, setHighscore] = useStoredState('highscore', 0);
+  const [gameOver, setGameOver] = useStoredState('gameover', false);
 
   const onNumberInput = async (digit: number) => {
-    const isCorrect = pi[digits] === digit;
+    if (gameOver) return;
+
+    const isCorrect = PI[digits] === digit;
     if (!isCorrect) {
       const newMistakes = mistakes + 1;
       setMistakes(newMistakes);
 
-      if (newMistakes === 1) {
-        console.log('made a mistake, saving score');
-        await saveScore(digits);
+      if (newMistakes > 5) {
+        await onGameOver();
       }
     } else {
       const newDigits = digits + 1;
       setDigits(newDigits);
 
-      if (mistakes === 0 && newDigits > highscore) {
+      if (newDigits > highscore) {
         setHighscore(newDigits);
       }
     }
@@ -63,17 +65,35 @@ export function App() {
   };
 
   const resetProgress = async () => {
-    const shouldSave = mistakes === 0 && digits > 0;
+    const shouldSave = !gameOver && digits > 0;
     setDigits(0);
     setMistakes(0);
+    setGameOver(false);
+
+    console.log('resetting, saving score: ', shouldSave);
     if (shouldSave) {
-      console.log('resetting without a mistake, saving score');
       await saveScore(digits);
     }
   };
 
-  const digitsToShow = pi.slice(0, digits);
+  const onGameOver = async () => {
+    const shouldSave = !gameOver && digits > 0;
+    setGameOver(true);
+
+    console.log('game over, saving score: ', shouldSave);
+    if (shouldSave) {
+      await saveScore(digits);
+    }
+  };
+
   const windowSize = useWindowSize();
+
+  useEffect(() => {
+    if (gameOver) {
+      console.log('loaded from game over state, resetting');
+      resetProgress();
+    }
+  }, []);
 
   return (
     <div class="p-8 pb-[4.25rem] mx-0 my-auto text-center flex flex-col gap-5">
@@ -87,10 +107,12 @@ export function App() {
       </h1>
       <DigitsGrid
         windowSize={windowSize}
-        digits={digitsToShow}
+        digits={digits}
         mistakes={mistakes}
         highscore={highscore}
         resetCallback={resetProgress}
+        uncover={gameOver}
+        uncoverCallback={onGameOver}
       ></DigitsGrid>
       <DigitButtonRow callback={onNumberInput}></DigitButtonRow>
     </div>
