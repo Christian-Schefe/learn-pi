@@ -4,7 +4,6 @@ import { DigitsGrid } from './digitsGrid';
 import { DigitButtonRow } from './mobileInput';
 import { useState } from 'preact/hooks';
 import { KeyboardListener } from './keyboardListener';
-import { useWindowSize } from 'react-use';
 import { saveScore } from './middleware';
 import { ThemeToggle } from './theme';
 
@@ -88,8 +87,6 @@ export function App() {
     }
   };
 
-  const windowSize = useWindowSize();
-
   return (
     <div class="p-8 pb-[4.25rem] mx-0 my-auto text-center flex flex-col gap-5">
       <KeyboardListener callback={onKeyboardInput}></KeyboardListener>
@@ -102,7 +99,6 @@ export function App() {
         <ThemeToggle></ThemeToggle>
       </h1>
       <DigitsGrid
-        windowSize={windowSize}
         digits={digits}
         mistakes={mistakes}
         highscore={highscore}

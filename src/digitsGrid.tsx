@@ -1,6 +1,7 @@
 import { DigitCell } from './digitCell';
 import { StatsDisplay } from './statsDisplay';
 import { PI } from './app';
+import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 const windowPadding = 32 * 2;
 const cellSize = 32;
@@ -15,11 +16,12 @@ function calcCols(width: number): { cols: number; gridWidth: number } {
   const fittingRows = Math.floor(spaceForCols / paddedCellSize);
 
   const cols = Math.min(15, minCols + fittingRows);
+  console.log('cols:', cols);
+  console.log('window width:', width);
   return { cols, gridWidth: cols * paddedCellSize - gap };
 }
 
 interface Props {
-  windowSize: { width: number; height: number };
   digits: number;
   mistakes: number;
   highscore: number;
@@ -30,7 +32,9 @@ interface Props {
 
 export function DigitsGrid(props: Props) {
   const cells = [];
-  const { cols, gridWidth } = calcCols(props.windowSize.width);
+  const windowSize = useWindowWidth();
+
+  const { cols, gridWidth } = calcCols(windowSize);
 
   const minRows = cols;
   const rowsCount = Math.max(
@@ -44,9 +48,7 @@ export function DigitsGrid(props: Props) {
   for (let i = 0; i < rowsCount * cols - 2; i++) {
     const isDiscovered = i < props.digits;
     const text = isDiscovered || props.uncover ? PI[i].toString() : '';
-    cells.push(
-      DigitCell({ text, index: i, discovered: isDiscovered }),
-    );
+    cells.push(DigitCell({ text, index: i, discovered: isDiscovered }));
   }
 
   const style = {
