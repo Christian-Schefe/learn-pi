@@ -1,4 +1,6 @@
 CREATE TABLE IF NOT EXISTS scores (
-    id serial primary key,
-    score int not null
+    id SERIAL PRIMARY KEY,
+    score INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip_address VARCHAR(45) NOT NULL
 );

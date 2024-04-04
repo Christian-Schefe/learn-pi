@@ -1,5 +1,10 @@
+mod service;
+
+use crate::service::ServiceResult;
+use std::net::SocketAddr;
+
 use axum::{
-    extract::{Path, State},
+    extract::{ConnectInfo, Path, State},
     http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
@@ -8,7 +13,6 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use shuttle_runtime::CustomError;
 use sqlx::{prelude::FromRow, PgPool};
-use tower_http::cors::Any;
 
 async fn retrieve(
     Path(id): Path<i32>,
@@ -19,39 +23,38 @@ async fn retrieve(
         .fetch_one(&state.db)
         .await
     {
-        Ok(todo) => Ok((StatusCode::OK, Json(todo))),
+        Ok(entry) => Ok((StatusCode::OK, Json(entry))),
         Err(e) => Err((StatusCode::BAD_REQUEST, e.to_string())),
     }
 }
 
 async fn add(
+    ConnectInfo(addr): ConnectInfo<SocketAddr>,
     State(state): State<AppState>,
     Json(data): Json<NewEntry>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
-    match sqlx::query_as::<_, Entry>("INSERT INTO scores(score) VALUES ($1) RETURNING id, score")
-        .bind(&data.score)
-        .fetch_one(&state.db)
-        .await
+    match sqlx::query_as::<_, Entry>(
+        "INSERT INTO scores(score, ip_address) VALUES ($1) RETURNING id, score, created_at, ip_address",
+    )
+    .bind(&data.score)
+    .bind(&addr.ip().to_string())
+    .fetch_one(&state.db)
+    .await
     {
-        Ok(todo) => Ok((StatusCode::CREATED, Json(todo))),
+        Ok(entry) => Ok((StatusCode::CREATED, Json(entry))),
         Err(e) => Err((StatusCode::BAD_REQUEST, e.to_string())),
     }
 }
 
-async fn update(
-    State(state): State<AppState>,
-    Path(id): Path<i32>,
-    Json(data): Json<Entry>,
-) -> Result<impl IntoResponse, impl IntoResponse> {
-    match sqlx::query_as::<_, Entry>(
-        "UPDATE scores SET score = $1 WHERE id = $2 RETURNING id, score",
-    )
-    .bind(&data.score)
-    .bind(&id)
-    .fetch_one(&state.db)
-    .await
+async fn stats_avg(State(state): State<AppState>) -> Result<impl IntoResponse, impl IntoResponse> {
+    match sqlx::query_scalar::<_, f64>("SELECT AVG(score) FROM scores")
+        .fetch_one(&state.db)
+        .await
     {
-        Ok(todo) => Ok((StatusCode::CREATED, Json(todo))),
+        Ok(avg) => Ok((
+            StatusCode::OK,
+            Json(serde_json::json!({"average_score": avg})),
+        )),
         Err(e) => Err((StatusCode::BAD_REQUEST, e.to_string())),
     }
 }
@@ -70,10 +73,12 @@ struct NewEntry {
 struct Entry {
     id: i32,
     score: i32,
+    created_at: sqlx::types::chrono::NaiveDateTime,
+    ip_address: String,
 }
 
 #[shuttle_runtime::main]
-async fn main(#[shuttle_shared_db::Postgres] db: PgPool) -> shuttle_axum::ShuttleAxum {
+async fn main(#[shuttle_shared_db::Postgres] db: PgPool) -> ServiceResult {
     sqlx::migrate!().run(&db).await.map_err(CustomError::new)?;
 
     let state = AppState { db };
@@ -86,7 +91,7 @@ async fn main(#[shuttle_shared_db::Postgres] db: PgPool) -> shuttle_axum::Shuttl
     let router = Router::new()
         .route("/scores", post(add))
         .route("/scores/:id", get(retrieve))
-        .route("/scores/:id", post(update))
+        .route("/stats/avg", get(stats_avg))
         .with_state(state)
         .layer(cors);
 
