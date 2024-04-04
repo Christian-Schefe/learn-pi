@@ -34,7 +34,7 @@ async fn add(
     Json(data): Json<NewEntry>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     match sqlx::query_as::<_, Entry>(
-        "INSERT INTO scores(score, ip_address) VALUES ($1) RETURNING id, score, created_at, ip_address",
+        "INSERT INTO scores(score, ip_address) VALUES ($1, $2) RETURNING id, score, created_at, ip_address",
     )
     .bind(&data.score)
     .bind(&addr.ip().to_string())

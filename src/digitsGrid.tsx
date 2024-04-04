@@ -25,7 +25,7 @@ interface Props {
   highscore: number;
   uncover: boolean;
   resetCallback: () => void;
-  uncoverCallback: () => void;
+  surrenderCallback: () => void;
 }
 
 export function DigitsGrid(props: Props) {
@@ -38,20 +38,15 @@ export function DigitsGrid(props: Props) {
     minRows,
   );
 
-  for (let i = 0; i < rowsCount * cols; i++) {
-    if (i == 0)
-      cells.push(DigitCell({ text: '3', index: 0, discovered: true }));
-    else if (i == 1)
-      cells.push(DigitCell({ text: '.', index: 0, discovered: true }));
-    else {
-      const digitIndex = i - 2;
-      const isDiscovered = digitIndex < props.digits;
-      const text =
-        isDiscovered || props.uncover ? PI[digitIndex].toString() : '';
-      cells.push(
-        DigitCell({ text, index: digitIndex, discovered: isDiscovered }),
-      );
-    }
+  cells.push(DigitCell({ text: '3', discovered: true }));
+  cells.push(DigitCell({ text: '.', discovered: true }));
+
+  for (let i = 0; i < rowsCount * cols - 2; i++) {
+    const isDiscovered = i < props.digits;
+    const text = isDiscovered || props.uncover ? PI[i].toString() : '';
+    cells.push(
+      DigitCell({ text, index: i, discovered: isDiscovered }),
+    );
   }
 
   const style = {
@@ -75,7 +70,7 @@ export function DigitsGrid(props: Props) {
           digits={props.digits}
           resetCallback={props.resetCallback}
           uncovered={props.uncover}
-          uncoverCallback={props.uncoverCallback}
+          surrenderCallback={props.surrenderCallback}
         ></StatsDisplay>
       </div>
     </div>

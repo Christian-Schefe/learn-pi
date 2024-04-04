@@ -1,11 +1,11 @@
 interface DigitCellProps {
   text: string;
-  index: number;
+  index?: number;
   discovered: boolean;
 }
 
 export function DigitCell(props: DigitCellProps) {
-  const isMilestone = props.index >= 49 && (props.index + 1) % 50 === 0;
+  const isMilestone = props.index != undefined && (props.index + 1) % 50 === 0;
   const color =
   props.discovered
       ? isMilestone

@@ -112,7 +112,7 @@ export function App() {
         highscore={highscore}
         resetCallback={resetProgress}
         uncover={gameOver}
-        uncoverCallback={onGameOver}
+        surrenderCallback={onGameOver}
       ></DigitsGrid>
       <DigitButtonRow callback={onNumberInput}></DigitButtonRow>
     </div>

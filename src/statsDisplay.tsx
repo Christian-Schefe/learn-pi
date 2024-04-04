@@ -1,6 +1,5 @@
 import resetSvg from '/reset.svg';
-import eyeOpenSvg from '/eye_open.svg';
-import eyeClosedSvg from '/eye_closed.svg';
+import surrenderSvg from '/surrender.svg';
 
 function getClassByMistakes(mistakes: number) {
   if (mistakes == 0) {
@@ -19,10 +18,9 @@ export const StatsDisplay = (props: {
   digits: number;
   highscore: number;
   resetCallback: () => void;
-  uncoverCallback: () => void;
+  surrenderCallback: () => void;
   uncovered: boolean;
 }) => {
-  const eyeSvg = props.uncovered ? eyeOpenSvg : eyeClosedSvg;
   return (
     <div class="flex flex-row flex-wrap gap-2 items-center justify-start self-start col-span-full bg-[#242424]">
       <button
@@ -32,10 +30,10 @@ export const StatsDisplay = (props: {
         <img src={resetSvg} alt="Logo" class="w-6 h-6" />
       </button>
       <button
-        onClick={props.uncoverCallback}
+        onClick={props.surrenderCallback}
         class="rounded-sm text-xl bg-blue-500 hover:bg-blue-600 active:bg-blue-700 min-w-8 h-8 flex gap-2 items-center justify-center"
       >
-        <img src={eyeSvg} alt="Logo" class="w-6 h-6" />
+        <img src={surrenderSvg} alt="Logo" class="w-6 h-6" />
       </button>
       <div class="px-2 rounded-sm text-xl bg-blue-500 min-w-8 h-8 flex gap-2 items-center justify-center">
         <p class="text-xl tracking-wide [text-shadow:_0px_0px_5px_var(--tw-shadow-color)] shadow-gray-700">
