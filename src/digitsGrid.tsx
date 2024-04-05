@@ -1,11 +1,12 @@
 import { DigitCell } from './digitCell';
 import { StatsDisplay } from './statsDisplay';
 import { PI } from './play';
-import { useWindowWidth } from '@react-hook/window-size/throttled';
+import { useWindowHeight, useWindowWidth } from '@react-hook/window-size/throttled';
 
 const windowPadding = 32 * 2;
 const cellSize = 32;
 const gap = 4;
+const windowHeightPadding = 68 * 2 + 32 + 32;
 
 function calcCols(width: number): { cols: number; gridWidth: number } {
   const minCols = 3;
@@ -21,6 +22,20 @@ function calcCols(width: number): { cols: number; gridWidth: number } {
   return { cols, gridWidth: cols * paddedCellSize - gap };
 }
 
+function calcMinRows(height: number): number {
+  const minRows = 3;
+  const paddedCellSize = cellSize + gap;
+  const availableHeight = height - windowHeightPadding;
+  const spaceForRows = availableHeight + gap - paddedCellSize * minRows;
+
+  const fittingRows = Math.floor(spaceForRows / paddedCellSize);
+
+  const rows = minRows + fittingRows;
+  console.log('rows:', rows);
+  console.log('window height:', height);
+  return rows;
+}
+
 interface Props {
   digits: number;
   mistakes: number;
@@ -32,11 +47,12 @@ interface Props {
 
 export function DigitsGrid(props: Props) {
   const cells = [];
-  const windowSize = useWindowWidth();
+  const windowWidth = useWindowWidth();
+  const windowHeight = useWindowHeight();
 
-  const { cols, gridWidth } = calcCols(windowSize);
+  const { cols, gridWidth } = calcCols(windowWidth);
+  const minRows = Math.min(cols, calcMinRows(windowHeight));
 
-  const minRows = cols;
   const rowsCount = Math.max(
     Math.floor((props.digits + 1) / cols) + 2,
     minRows,

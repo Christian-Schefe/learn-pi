@@ -24,19 +24,19 @@ export function Stats() {
           <p class="text-lg dark:text-white text-left w-full self-center">
             Highscore:
           </p>
-          <span class="ml-2 text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 h-10 inline-flex items-center justify-center">
+          <span class="ml-2 text-xl text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 h-10 inline-flex items-center justify-center">
             {highscore}
           </span>
           <p class="text-lg dark:text-white text-left w-full self-center">
             Average:
           </p>
-          <span class="ml-2 text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 h-10 inline-flex items-center justify-center">
+          <span class="ml-2 text-xl text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 h-10 inline-flex items-center justify-center">
             {average ?? 'N/A'}
           </span>
         </div>
         <button
           onClick={resetStats}
-          class="mt-4 text-white w-20 hover:bg-red-600 active:bg-red-700 rounded-sm gap-2 p-6 text-xl bg-red-500 min-w-8 h-8 flex items-center justify-center"
+          class="mt-4 text-white w-32 font-bold hover:bg-red-600 active:bg-red-700 rounded-sm gap-2 p-6 text-xl bg-red-500 min-w-8 h-8 flex items-center justify-center"
         >
           Reset
         </button>
