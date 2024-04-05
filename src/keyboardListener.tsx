@@ -47,7 +47,7 @@ export class ResizeListener extends Component<ResizeListenerProps> {
   keyCallback = () => {};
 
   handleResize = (event: Event) => {
-    console.log("Resize:", event);
+    console.log('Resize:', event);
     this.props.callback(event);
   };
 

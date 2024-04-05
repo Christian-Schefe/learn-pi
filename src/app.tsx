@@ -28,9 +28,23 @@ function MainPage() {
         </Link>
       </div>
       <p class="text-lg dark:text-white text-left w-full">
-        Frontend hosted on <a href="https://pages.github.com/" class="text-red-500 dark:text-red-400 hover:underline">GitHub Pages</a>.
+        Frontend hosted on{' '}
+        <a
+          href="https://pages.github.com/"
+          class="text-red-500 dark:text-red-400 hover:underline"
+        >
+          GitHub Pages
+        </a>
+        .
         <br />
-        Backend hosted on <a href="https://www.shuttle.rs/" class="text-red-500 dark:text-red-400 hover:underline">shuttle.rs</a>.
+        Backend hosted on{' '}
+        <a
+          href="https://www.shuttle.rs/"
+          class="text-red-500 dark:text-red-400 hover:underline"
+        >
+          shuttle.rs
+        </a>
+        .
         <br />
         Monthly costs:
         <span class="ml-2 text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 inline-flex items-center justify-center">

@@ -1,5 +1,5 @@
-import { ThemeToggle } from "./theme";
-import piSvg from "/pi.svg";
+import { ThemeToggle } from './theme';
+import piSvg from '/pi.svg';
 
 export const Title = () => {
   return (
