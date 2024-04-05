@@ -1,6 +1,6 @@
 import { DigitCell } from './digitCell';
 import { StatsDisplay } from './statsDisplay';
-import { PI } from './app';
+import { PI } from './play';
 import { useWindowWidth } from '@react-hook/window-size/throttled';
 
 const windowPadding = 32 * 2;

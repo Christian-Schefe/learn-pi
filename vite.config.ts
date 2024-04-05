@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
+import { BASE_URL } from './src/utils/consts';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [preact()],
-  base: '/learn-pi/',
+  base: BASE_URL,
 });

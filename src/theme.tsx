@@ -1,10 +1,10 @@
 import { useEffect } from 'preact/hooks';
-import { useStoredState } from './app';
 import darkSvg from '/dark.svg';
 import lightSvg from '/light.svg';
 import systemDarkSvg from '/systemDark.svg';
 import systemLightSvg from '/systemLight.svg';
 import { useMedia } from 'react-use';
+import { useStoredState } from './utils/storedState';
 
 enum Theme {
   Light = 'light',
@@ -51,7 +51,7 @@ export const ThemeToggle = () => {
           : systemLightSvg;
 
   return (
-    <div class="text-white fixed p-1 top-2 right-2 flex justify-center gap-1">
+    <div class="text-white fixed p-1 top-4 right-4 flex justify-center gap-1">
       <button
         class="w-6 h-6 font-bold flex text-xl items-center justify-center rounded-sm"
         onClick={cycleTheme}

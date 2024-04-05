@@ -1,4 +1,5 @@
-import { MAX_MISTAKES } from './app';
+import { Link } from 'react-router-dom';
+import { MAX_MISTAKES } from './utils/consts';
 import resetSvg from '/reset.svg';
 import surrenderSvg from '/surrender.svg';
 
@@ -40,10 +41,13 @@ export const StatsDisplay = (props: {
         <p class="text-xl tracking-wide">Digits:</p>
         <h1 class="font-bold">{props.digits}</h1>
       </div>
-      <div class="rounded-sm gap-2 px-2 text-xl bg-blue-500 min-w-8 h-8 flex items-center justify-center">
+      <Link
+        to="/learn-pi/stats"
+        class="hover:bg-blue-600 active:bg-blue-700 rounded-sm gap-2 px-2 text-xl bg-blue-500 min-w-8 h-8 flex items-center justify-center"
+      >
         <p class="text-xl tracking-wide">Highscore:</p>
         <h1 class="font-bold">{props.highscore}</h1>
-      </div>
+      </Link>
       <div
         class={`rounded-sm gap-2 px-2 text-xl ${getClassByMistakes(props.mistakes)} min-w-8 h-8 flex items-center justify-center`}
       >
