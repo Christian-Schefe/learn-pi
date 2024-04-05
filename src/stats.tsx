@@ -4,6 +4,13 @@ import { useStoredState } from './utils/storedState';
 import { getAverage } from './middleware';
 import { GLOBAL_HIGHSCORE_REFRESH_INTERVAL as GLOBAL_AVERAGE_REFRESH_INTERVAL } from './utils/consts';
 
+function trimFloat(num: number | undefined | null): string {
+  const str = num?.toFixed(2) ?? 'N/A';
+  const withoutZeros = str.replace(/0+$/, '');
+  const withoutDot = withoutZeros.replace(/\.$/, '');
+  return withoutDot;
+}
+
 export function Stats() {
   const [highscore, setHighscore] = useStoredState('highscore', 0);
   const [history, setHistory] = useStoredState<number[]>('history', []);
@@ -30,7 +37,10 @@ export function Stats() {
     const timeToRefresh =
       GLOBAL_AVERAGE_REFRESH_INTERVAL - (now - (globalAverage?.timestamp ?? 0));
     if (!globalAverage || timeToRefresh <= 0) {
-      console.log("fetching new average, time to next refresh was:", timeToRefresh);
+      console.log(
+        'fetching new average, time to next refresh was:',
+        timeToRefresh,
+      );
       getAverage().then(res => {
         setGlobalAverage(res);
       });
@@ -58,13 +68,13 @@ export function Stats() {
             Average:
           </p>
           <span class="ml-2 text-xl text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 h-10 inline-flex items-center justify-center">
-            {average ?? 'N/A'}
+            {trimFloat(average)}
           </span>
           <p class="text-lg dark:text-white text-left w-full self-center">
             Global average:
           </p>
           <span class="ml-2 text-xl text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 h-10 inline-flex items-center justify-center">
-            {globalAverage?.average ?? 'N/A'}
+            {trimFloat(globalAverage?.average)}
           </span>
         </div>
         <button
