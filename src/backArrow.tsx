@@ -14,7 +14,7 @@ export const BackArrow = (props: { to: string }) => {
   };
 
   return (
-    <div class="text-white fixed p-1 top-4 left-4 flex justify-center gap-1">
+    <div class="text-white fixed p-1 top-2 left-2 flex justify-center gap-1">
       <Link
         to={path}
         class="w-6 h-6 font-bold flex text-xl items-center justify-center rounded-sm"
