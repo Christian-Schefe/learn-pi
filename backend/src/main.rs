@@ -10,6 +10,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use num_traits::cast::ToPrimitive;
 use serde::{Deserialize, Serialize};
 use shuttle_runtime::CustomError;
 use sqlx::{prelude::FromRow, PgPool};
@@ -47,13 +48,13 @@ async fn add(
 }
 
 async fn stats_avg(State(state): State<AppState>) -> Result<impl IntoResponse, impl IntoResponse> {
-    match sqlx::query_scalar::<_, f64>("SELECT AVG(score) FROM scores")
+    match sqlx::query_scalar::<_, sqlx::types::BigDecimal>("SELECT AVG(score) FROM scores")
         .fetch_one(&state.db)
         .await
     {
         Ok(avg) => Ok((
             StatusCode::OK,
-            Json(serde_json::json!({"average_score": avg})),
+            Json(serde_json::json!({"average_score": avg.to_f64()})),
         )),
         Err(e) => Err((StatusCode::BAD_REQUEST, e.to_string())),
     }

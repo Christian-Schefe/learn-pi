@@ -1,9 +1,19 @@
+import { useEffect } from 'preact/hooks';
 import { BackArrow } from './backArrow';
 import { useStoredState } from './utils/storedState';
+import { getAverage } from './middleware';
+import { GLOBAL_HIGHSCORE_REFRESH_INTERVAL as GLOBAL_AVERAGE_REFRESH_INTERVAL } from './utils/consts';
 
 export function Stats() {
   const [highscore, setHighscore] = useStoredState('highscore', 0);
   const [history, setHistory] = useStoredState<number[]>('history', []);
+  const [globalAverage, setGlobalAverage] = useStoredState<
+    | {
+        average: number;
+        timestamp: number;
+      }
+    | undefined
+  >('globalAverage', undefined);
 
   const average =
     history.length > 0
@@ -14,6 +24,23 @@ export function Stats() {
     setHighscore(0);
     setHistory([]);
   };
+
+  useEffect(() => {
+    const now = Date.now();
+    const timeToRefresh =
+      GLOBAL_AVERAGE_REFRESH_INTERVAL - (now - (globalAverage?.timestamp ?? 0));
+    if (!globalAverage || timeToRefresh <= 0) {
+      console.log("fetching new average, time to next refresh was:", timeToRefresh);
+      getAverage().then(res => {
+        setGlobalAverage(res);
+      });
+    } else {
+      console.log(
+        'not fetching new average, using cached value, time to next refresh:',
+        timeToRefresh,
+      );
+    }
+  }, []);
 
   return (
     <>
@@ -32,6 +59,12 @@ export function Stats() {
           </p>
           <span class="ml-2 text-xl text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 h-10 inline-flex items-center justify-center">
             {average ?? 'N/A'}
+          </span>
+          <p class="text-lg dark:text-white text-left w-full self-center">
+            Global average:
+          </p>
+          <span class="ml-2 text-xl text-white rounded-sm font-bold bg-blue-500 min-w-8 px-2 h-10 inline-flex items-center justify-center">
+            {globalAverage?.average ?? 'N/A'}
           </span>
         </div>
         <button
