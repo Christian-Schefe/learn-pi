@@ -13,7 +13,7 @@ use axum::{
 };
 use num_traits::cast::ToPrimitive;
 use queries::{
-    add_score_query, count_all, score_ranges_query, stats_avg_query, ScoreRanges,
+    add_score_query, count_all, score_ranges_query, stats_avg_query, ScoreRange, ScoreRangeData,
     SerializableScoreRange,
 };
 use serde::{Deserialize, Serialize};
@@ -60,19 +60,23 @@ async fn stats_ranges_perc(
         Err(e) => Err((StatusCode::BAD_REQUEST, e.to_string())),
     }?;
 
-    match sqlx::query_as::<_, ScoreRanges>(&score_ranges_query())
+    let range_count = 10;
+    let range_size = 10;
+
+    match sqlx::query_as::<_, ScoreRange>(&score_ranges_query(range_size, range_count))
         .fetch_all(&state.db)
         .await
     {
         Ok(avg) => {
-            let mapped: Vec<SerializableScoreRange> = avg
-                .into_iter()
-                .map(|x| x.as_serializable(total_count))
-                .collect();
-            Ok((
-                StatusCode::OK,
-                Json(mapped),
-            ))
+            let ranges: Vec<SerializableScoreRange> =
+                avg.into_iter().map(|x| x.as_serializable()).collect();
+            let data = ScoreRangeData {
+                range_count,
+                range_size,
+                total_count: total_count.try_into().unwrap(),
+                ranges,
+            };
+            Ok((StatusCode::OK, Json(data)))
         }
         Err(e) => Err((StatusCode::BAD_REQUEST, e.to_string())),
     }

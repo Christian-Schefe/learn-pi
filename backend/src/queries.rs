@@ -16,45 +16,46 @@ pub fn count_all() -> String {
 }
 
 #[derive(FromRow)]
-pub struct ScoreRanges {
+pub struct ScoreRange {
     pub score_range: String,
     pub count_in_range: i64,
 }
 
 #[derive(Serialize)]
 pub struct SerializableScoreRange {
-    pub score_range: String,
     pub count_in_range: i64,
-    pub ratio: f64,
+    pub range_index: usize,
 }
 
-impl ScoreRanges {
-    pub fn as_serializable(self, total_count: i64) -> SerializableScoreRange {
+#[derive(Serialize)]
+pub struct ScoreRangeData {
+    pub ranges: Vec<SerializableScoreRange>,
+    pub range_size: usize,
+    pub range_count: usize,
+    pub total_count: usize,
+}
+
+impl ScoreRange {
+    pub fn as_serializable(self) -> SerializableScoreRange {
         SerializableScoreRange {
-            score_range: self.score_range,
             count_in_range: self.count_in_range,
-            ratio: self.count_in_range as f64 / total_count as f64,
+            range_index: self.score_range.parse().unwrap_or_default(),
         }
     }
 }
 
-pub fn score_ranges_query() -> String {
-    let case_count = 10;
-    let case_size = 10;
+pub fn score_ranges_query(range_step: usize, range_count: usize) -> String {
     let case_query = |i: usize| -> String {
-        let start = case_size * i + 1;
-        let end = case_size * i + case_size;
-        if i < case_count {
-            format!(
-                "WHEN score >= {0} AND score <= {1} THEN '{0}-{1}'",
-                start, end
-            )
+        let start = range_count * i + 1;
+        let end = range_count * i + range_count;
+        if i < range_step {
+            format!("WHEN score >= {} AND score <= {} THEN '{}'", start, end, i)
         } else {
-            format!("ELSE '{}+'", i * case_size)
+            format!("ELSE '{}'", i)
         }
     };
 
-    let cases: String = (0..=case_count)
+    let cases: String = (0..=range_step)
         .map(case_query)
         .collect::<Vec<String>>()
         .join(" ");

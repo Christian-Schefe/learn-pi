@@ -37,3 +37,26 @@ export async function getAverage(): Promise<{
   console.log('got average: ', json);
   return { average: json.average_score, timestamp: Date.now() };
 }
+
+export interface ScoreRange {
+  range_index: number;
+  count_in_range: number;
+}
+
+export interface ScoreRangeData {
+  ranges: ScoreRange[];
+  range_count: number;
+  range_size: number;
+  total_count: number;
+}
+
+export async function getRanges(): Promise<ScoreRangeData> {
+  const response = await fetch(backendUrl + 'stats/ranges', {
+    method: 'GET',
+    mode: 'cors',
+  });
+
+  const json: ScoreRangeData = await response.json();
+  console.log('got score ranges: ', json);
+  return json;
+}

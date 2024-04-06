@@ -4,7 +4,7 @@ import { useStoredState } from './utils/storedState';
 import { getAverage } from './middleware';
 import { GLOBAL_HIGHSCORE_REFRESH_INTERVAL as GLOBAL_AVERAGE_REFRESH_INTERVAL } from './utils/consts';
 
-function trimFloat(num: number | undefined | null): string {
+export function trimFloat(num: number | undefined | null): string {
   const str = num?.toFixed(2) ?? 'N/A';
   const withoutZeros = str.replace(/0+$/, '');
   const withoutDot = withoutZeros.replace(/\.$/, '');
