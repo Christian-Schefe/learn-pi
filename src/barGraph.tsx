@@ -27,7 +27,7 @@ export const BarGraph = (props: {
   const bars = props.data.map(el => {
     const cells = [...Array(5).keys()].map(_ => (
       <div
-        class="outline outline-white outline-1 w-full"
+        class="outline outline-black dark:outline-white outline-1 w-full"
         style={{ height: `${height / 5}px` }}
       ></div>
     ));
@@ -51,9 +51,9 @@ export const BarGraph = (props: {
         {vertTicks}
       </div>
       <div
-        class="flex place-content-evenly"
+        class="flex place-content-evenly outline outline-black dark:outline-white outline-2"
         ref={ref as Ref<HTMLDivElement>}
-        style={{ height: `${props.height - 40}px` }}
+        style={{ height: `${props.height - 40}px`}}
       >
         {bars}
       </div>
