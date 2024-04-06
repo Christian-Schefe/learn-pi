@@ -88,7 +88,7 @@ export function Play() {
         surrenderCallback={onGameOver}
       />
       <DigitButtonRow callback={onNumberInput} />
-      <BackArrow to="" />
+      <BackArrow />
     </>
   );
 }

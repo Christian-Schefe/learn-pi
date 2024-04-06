@@ -54,7 +54,7 @@ export function Stats() {
 
   return (
     <>
-      <BackArrow to="" />
+      <BackArrow />
       <div class="flex flex-col gap-5 items-center self-center w-fit">
         <h2 class="font-bold mt-8 text-xl dark:text-white">Stats</h2>
         <div class="w-fit grid grid-cols-2 gap-2">

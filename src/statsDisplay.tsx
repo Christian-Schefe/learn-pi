@@ -42,7 +42,7 @@ export const StatsDisplay = (props: {
         <h1 class="font-bold">{props.digits}</h1>
       </div>
       <Link
-        to="/learn-pi/stats"
+        to="/stats"
         class="hover:bg-blue-600 active:bg-blue-700 rounded-sm gap-2 px-2 text-xl bg-blue-500 min-w-8 h-8 flex items-center justify-center"
       >
         <p class="text-xl tracking-wide">Highscore:</p>
