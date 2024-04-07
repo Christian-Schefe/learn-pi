@@ -1,8 +1,6 @@
-import { useEffect } from 'preact/hooks';
 import { BackArrow } from './backArrow';
-import { useStoredState } from './utils/storedState';
-import { getAverage } from './middleware';
-import { GLOBAL_HIGHSCORE_REFRESH_INTERVAL as GLOBAL_AVERAGE_REFRESH_INTERVAL } from './utils/consts';
+import { useStoredState, useTimedFetchStoredState } from './utils/storedState';
+import { AverageData, getAverage } from './middleware';
 
 export function trimFloat(num: number | undefined | null): string {
   const str = num?.toFixed(2) ?? 'N/A';
@@ -14,13 +12,11 @@ export function trimFloat(num: number | undefined | null): string {
 export function Stats() {
   const [highscore, setHighscore] = useStoredState('highscore', 0);
   const [history, setHistory] = useStoredState<number[]>('history', []);
-  const [globalAverage, setGlobalAverage] = useStoredState<
-    | {
-        average: number;
-        timestamp: number;
-      }
-    | undefined
-  >('globalAverage', undefined);
+  const globalAverage = useTimedFetchStoredState<AverageData | undefined>(
+    'globalAverage',
+    getAverage,
+    60000,
+  );
 
   const average =
     history.length > 0
@@ -31,26 +27,6 @@ export function Stats() {
     setHighscore(0);
     setHistory([]);
   };
-
-  useEffect(() => {
-    const now = Date.now();
-    const timeToRefresh =
-      GLOBAL_AVERAGE_REFRESH_INTERVAL - (now - (globalAverage?.timestamp ?? 0));
-    if (!globalAverage || timeToRefresh <= 0) {
-      console.log(
-        'fetching new average, time to next refresh was:',
-        timeToRefresh,
-      );
-      getAverage().then(res => {
-        setGlobalAverage(res);
-      });
-    } else {
-      console.log(
-        'not fetching new average, using cached value, time to next refresh:',
-        timeToRefresh,
-      );
-    }
-  }, []);
 
   return (
     <>

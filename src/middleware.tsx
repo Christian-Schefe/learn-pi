@@ -24,10 +24,12 @@ export async function saveScore(score: number): Promise<number> {
   return json.id;
 }
 
-export async function getAverage(): Promise<{
+export interface AverageData {
   average: number;
   timestamp: number;
-}> {
+}
+
+export async function getAverage(): Promise<AverageData> {
   const response = await fetch(backendUrl + 'stats/avg', {
     method: 'GET',
     mode: 'cors',

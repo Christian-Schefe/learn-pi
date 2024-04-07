@@ -2,43 +2,49 @@ import { Ref } from 'preact';
 import { useMeasure } from 'react-use';
 
 export const BarGraph = (props: {
-  data: { label: string; value: number }[];
+  data?: { label: string; value: number }[];
   height: number;
 }) => {
   const [ref, { height }] = useMeasure();
+
+  if (!props.data) return <div>No Data</div>;
 
   const labels = props.data.map(el => {
     return <Tick text={el.label} />;
   });
 
   const maxValue = Math.max(...props.data.map(el => el.value));
-  console.log('max:', maxValue, props.data);
 
-  const vertTicks = [...Array(5).keys()]
-    .map(i => i / 4)
+  const stepDivider = maxValue <= 0.3 ? 20 : 10;
+
+  const nextMultiple = Math.ceil(maxValue * stepDivider) / stepDivider;
+  const tickCount = Math.ceil(maxValue * stepDivider);
+
+  const vertTicks = [...Array(tickCount + 1).keys()]
+    .map(i => i / tickCount)
     .map(i => (
       <VertTick
-        text={(i * maxValue * 100).toFixed(1) + '%'}
+        text={(i * nextMultiple * 100).toFixed(0) + '%'}
         percentage={1 - i}
         height={height}
       />
     ));
 
   const bars = props.data.map(el => {
-    const cells = [...Array(5).keys()].map(_ => (
+    const cells = [...Array(tickCount).keys()].map(_ => (
       <div
-        class="outline outline-black dark:outline-white outline-1 w-full"
-        style={{ height: `${height / 5}px` }}
+        class="bg-white dark:bg-[#242424]"
+        style={{ height: `${height / tickCount}px` }}
       ></div>
     ));
 
     return (
       <div class="relative w-full">
         <div
-          class={`absolute bg-blue-500 left-[10%] right-[10%] top-auto bottom-0`}
-          style={{ height: `${(el.value / maxValue) * 100}%` }}
+          class={`absolute bg-blue-500 left-[20%] right-[20%] top-auto bottom-0`}
+          style={{ height: `${(el.value / nextMultiple) * 100}%` }}
         ></div>
-        <div class="flex flex-col place-content-evenly w-full h-full">
+        <div class="flex flex-col place-content-evenly w-full h-full gap-[1px]">
           {cells}
         </div>
       </div>
@@ -51,9 +57,9 @@ export const BarGraph = (props: {
         {vertTicks}
       </div>
       <div
-        class="flex place-content-evenly outline outline-black dark:outline-white outline-2"
+        class="flex place-content-evenly outline outline-black dark:outline-white outline-1 gap-[1px] bg-black dark:bg-white"
         ref={ref as Ref<HTMLDivElement>}
-        style={{ height: `${props.height - 40}px`}}
+        style={{ height: `${props.height - 40}px` }}
       >
         {bars}
       </div>
@@ -65,9 +71,11 @@ export const BarGraph = (props: {
 
 const Tick = (props: { text: string }) => {
   return (
-    <div class="w-full h-full relative">
-      <div class="absolute rotate-45 left-0 right-0 top-0 bottom-0 flex justify-center items-center">
-        <p class="whitespace-nowrap dark:text-white">{props.text}</p>
+    <div class="w-full h-full relative flex justify-center">
+      <div class="w-full h-full absolute flex">
+        <p class="w-full h-fit origin-left text-left rotate-45 translate-x-[calc(50%-2px)] text-sm whitespace-nowrap dark:text-white">
+          {props.text}
+        </p>
       </div>
     </div>
   );
@@ -85,7 +93,9 @@ const VertTick = (props: {
       style={{ transform: `translate(0,${px}px)` }}
     >
       <div class="absolute left-0 right-0 top-0 bottom-0 flex justify-end items-center">
-        <p class="whitespace-nowrap dark:text-white">{props.text}</p>
+        <p class="whitespace-nowrap dark:text-white pr-1 text-sm">
+          {props.text}
+        </p>
       </div>
     </div>
   );
