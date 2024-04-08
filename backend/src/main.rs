@@ -18,7 +18,7 @@ use queries::{
 };
 use serde::{Deserialize, Serialize};
 use shuttle_runtime::CustomError;
-use sqlx::{prelude::FromRow, PgPool};
+use sqlx::{prelude::FromRow, Executor, PgPool};
 
 async fn add(
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
@@ -102,7 +102,9 @@ struct Entry {
 
 #[shuttle_runtime::main]
 async fn main(#[shuttle_shared_db::Postgres] db: PgPool) -> ServiceResult {
-    sqlx::migrate!().run(&db).await.map_err(CustomError::new)?;
+    db.execute(include_str!("../schema.sql"))
+        .await
+        .map_err(CustomError::new)?;
 
     let state = AppState { db };
 
