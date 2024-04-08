@@ -30,10 +30,10 @@ export const BarGraph = (props: {
       />
     ));
 
-  const bars = props.data.map(el => {
-    const cells = [...Array(tickCount).keys()].map(_ => (
+  const bars = props.data.map((el, x) => {
+    const cells = [...Array(tickCount).keys()].map(y => (
       <div
-        class="bg-white dark:bg-[#242424]"
+        class={`${x > 0 ? 'border-l-[1px] -ml-[1px]' : ''} ${y > 0 ? 'border-t-[1px] -mt-[1px]' : ''} border-black dark:border-white`}
         style={{ height: `${height / tickCount}px` }}
       ></div>
     ));
@@ -57,7 +57,7 @@ export const BarGraph = (props: {
         {vertTicks}
       </div>
       <div
-        class="flex place-content-evenly outline outline-black dark:outline-white outline-1 gap-[1px] bg-black dark:bg-white"
+        class="flex place-content-evenly outline outline-black dark:outline-white outline-1 gap-[1px]"
         ref={ref as Ref<HTMLDivElement>}
         style={{ height: `${props.height - 40}px` }}
       >
