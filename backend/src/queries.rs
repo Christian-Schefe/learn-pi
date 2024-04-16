@@ -4,7 +4,7 @@ use sqlx::prelude::FromRow;
 const SCORES_TABLE: &str = "scores";
 
 pub fn add_score_query() -> String {
-    format!("INSERT INTO {SCORES_TABLE}(score, ip_address) VALUES ($1, $2) RETURNING id, score, created_at, ip_address")
+    format!("INSERT INTO {SCORES_TABLE}(score) VALUES ($1) RETURNING *")
 }
 
 pub fn stats_avg_query() -> String {

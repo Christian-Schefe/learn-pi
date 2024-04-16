@@ -2,10 +2,9 @@ mod queries;
 mod service;
 
 use crate::service::ServiceResult;
-use std::net::SocketAddr;
 
 use axum::{
-    extract::{ConnectInfo, State},
+    extract::State,
     http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
@@ -21,13 +20,11 @@ use shuttle_runtime::CustomError;
 use sqlx::{prelude::FromRow, Executor, PgPool};
 
 async fn add(
-    ConnectInfo(addr): ConnectInfo<SocketAddr>,
     State(state): State<AppState>,
     Json(data): Json<NewEntry>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     match sqlx::query_as::<_, Entry>(&add_score_query())
         .bind(&data.score)
-        .bind(&addr.ip().to_string())
         .fetch_one(&state.db)
         .await
     {
@@ -97,7 +94,6 @@ struct Entry {
     id: i32,
     score: i32,
     created_at: sqlx::types::chrono::NaiveDateTime,
-    ip_address: String,
 }
 
 #[shuttle_runtime::main]
